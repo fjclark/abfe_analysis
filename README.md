@@ -1,2 +1,2 @@
 # abfe_analysis
-A package for analysis ABFE calculations performed with SOMD.
+A package for analysis of ABFE calculations performed with SOMD.
