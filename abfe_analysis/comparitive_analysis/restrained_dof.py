@@ -59,7 +59,9 @@ def read_rest_dict(cfg_file, rest_type):
 
         if rest_type == "Boresch":
             if l.startswith("boresch restraints dictionary"):
-                dict_as_list = l.split("=")[1][1:-1] # remove leading space and \n
+                dict_as_list = l.split("=")[1][1:] # remove leading space 
+                if dict_as_list[-1] == "\n":
+                    dict_as_list = dict_as_list[:-1] # Remove \n
                 rest_dict = literal_eval("".join(dict_as_list))
                 break
         
