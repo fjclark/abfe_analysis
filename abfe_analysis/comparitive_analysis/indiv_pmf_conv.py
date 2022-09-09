@@ -75,6 +75,8 @@ def plot_pmfs_conv(leg="bound", run_nos=[1,2,3,4,5], pickled_data="analysis/conv
         for j, stage in enumerate(stages):
             if n_stages ==1:
                 ax = axs[i]
+            if n_runs ==1:
+                ax = axs[j]
             else:
                 ax = axs[i,j]
             mapper = plot_pmf_conv(ax, leg, stage, run_name, conv_dict)

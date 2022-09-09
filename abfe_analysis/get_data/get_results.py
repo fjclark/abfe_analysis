@@ -112,7 +112,7 @@ def get_results(leg = "bound", run_nos = [1,2,3,4,5], restraint_type="Boresch"):
                         dg_ana, conf_int_ana = get_restraint_cor(f"{output_dir}/boresch_analytical_correction.dat",
                                                                 restraint_type="Boresch")
                         results[run_name]["boresch_ana_corr"] = (dg_ana, conf_int_ana)
-                        dg_semi, conf_int_semi = get_restraint_cor(f"{output_dir}/boresch_semi-analytical_correction.dat",
+                        dg_semi, conf_int_semi = get_restraint_cor(f"{output_dir}/boresch_semi_ana_correction.dat",
                                                                     restraint_type="Boresch")
                         results[run_name]["boresch_semi-ana_corr"] = (dg_semi, conf_int_semi)
                     elif restraint_type == "multiple_dist":
@@ -218,3 +218,4 @@ def write_results(leg="bound", run_nos = [1,2,3,4,5], restraint_type="Boresch"):
     results = get_results(leg, run_nos, restraint_type)
     write_results_indiv(results)
     write_results_overall(results)
+    print("###############################################################################################")
