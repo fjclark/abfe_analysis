@@ -15,9 +15,9 @@ from .comparitive_analysis import rmsd
 from .comparitive_analysis import av_waters
 
 def run_analysis(leg = "bound", run_nos=[1,2,3,4,5], restraint_type="Boresch", timestep=4, nrg_freq=100,
-                 #percent_traj_dict = {"restrain":83.33333333, "discharge":83.33333333, "vanish":62.5, "rigidify":83.33333333,
-                 #    "unrigidify_lig":83.33333333, "unrigidify_prot":83.33333333, "release":83.333333},
-                percent_traj_dict = {"discharge":83.33333333, "vanish":83.3333333, "restrain":83.33333333},
+                 percent_traj_dict = {"restrain":83.33333333, "discharge":83.33333333, "vanish":62.5, "rigidify":83.33333333,
+                     "unrigidify_lig":83.33333333, "unrigidify_prot":83.33333333, "release":83.333333},
+                #percent_traj_dict = {"discharge":83.33333333, "vanish":83.3333333, "restrain":83.33333333},
                 simtime = {"restrain": {"wind_len": 6, "discard": 1}, "discharge": {"wind_len": 6, "discard": 1}, "vanish": {"wind_len": 6, "discard": 1},
                           "release": {"wind_len": 6, "discard": 1}, "unrigidify_lig": {
                           "wind_len": 6, "discard": 1},"unrigidify_prot": {
@@ -65,7 +65,7 @@ def run_analysis(leg = "bound", run_nos=[1,2,3,4,5], restraint_type="Boresch", t
                                                simtime=simtime)
 
     if leg == "bound":
-        #get_results.write_results(leg, run_nos, restraint_type)
+        get_results.write_results(leg, run_nos, restraint_type)
         compare_conv.plot_stages_conv("analysis/convergence_data.pickle", leg)
         compare_conv.plot_overall_conv("analysis/convergence_data.pickle", leg)
         compare_pmfs.plot_all_pmfs(run_nos, leg)
@@ -73,11 +73,11 @@ def run_analysis(leg = "bound", run_nos=[1,2,3,4,5], restraint_type="Boresch", t
         indiv_pmf_conv.plot_pmfs_conv(leg, run_nos)
         dh_dlam.plot_grads(leg, run_nos, percent_traj_dict, timestep, nrg_freq, dt=0)
 
-        #if "vanish" in stages:
+        if "vanish" in stages:
             # Plot average waters within 8 A of CG2 in VAL and N in PRT on opposite sides of binding pocket.
             # This gives reasonable coverage of the pocket while excluding most waters outside.
-            # av_waters.plot_av_waters(leg, run_nos, stage="vanish", 
-            # percent_traj=percent_traj_dict["vanish"], index=1637,length=8, index2=34, length2=8)
+            av_waters.plot_av_waters(leg, run_nos, stage="vanish", 
+            percent_traj=percent_traj_dict["vanish"], index=1637,length=8, index2=34, length2=8)
 
         # Plot DOF for restrain lam = 0, restrain lam = 1, discharge lam = 1 and vanish lam =1
         plot_winds = [("restrain",0.000),("restrain",1.000),("discharge",1.000),("vanish",1.000)]
@@ -103,7 +103,7 @@ def run_analysis(leg = "bound", run_nos=[1,2,3,4,5], restraint_type="Boresch", t
         # RMSD for ligand
         rmsd.plot_rmsds(leg, run_nos, percent_traj_dict, "resname LIG and (not name H*)")
         # RMSD for syn-anti interconversion of ligand (ignore phenol group for which is rotatable and adds noise)
-        #rmsd.plot_rmsds(leg, run_nos, percent_traj_dict, "resname LIG and (not name H* OAA CAS CAD CAF CAG CAP CAE)")
+        rmsd.plot_rmsds(leg, run_nos, percent_traj_dict, "resname LIG and (not name H* OAA CAS CAD CAF CAG CAP CAE)")
 
     elif leg == "free":
         get_results.write_results(leg, run_nos)
@@ -115,7 +115,7 @@ def run_analysis(leg = "bound", run_nos=[1,2,3,4,5], restraint_type="Boresch", t
         dh_dlam.plot_grads(leg, run_nos, percent_traj_dict, timestep, nrg_freq, dt=0)
 
         # RMSD for syn-anti interconversion of ligand (ignore phenol group which is rotatable and adds noise)
-        #rmsd.plot_rmsds(leg, run_nos, percent_traj_dict, "resname LIG and (not name H* OAA CAS CAD CAF CAG CAP CAE)")
+        rmsd.plot_rmsds(leg, run_nos, percent_traj_dict, "resname LIG and (not name H* OAA CAS CAD CAF CAG CAP CAE)")
 
 
     print("###############################################################################################")

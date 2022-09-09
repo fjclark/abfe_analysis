@@ -218,4 +218,3 @@ def write_results(leg="bound", run_nos = [1,2,3,4,5], restraint_type="Boresch"):
     results = get_results(leg, run_nos, restraint_type)
     write_results_indiv(results)
     write_results_overall(results)
-    print("###############################################################################################")
