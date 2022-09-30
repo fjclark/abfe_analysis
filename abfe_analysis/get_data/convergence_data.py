@@ -69,7 +69,7 @@ def do_mbar(lam_vals, input_dir, output_dir, start_time, end_time, nrg_freq, tim
                           nrg_freq, timestep)
         cumtime += delta_t
 
-    cmd = f"analyse_freenrg mbar \
+    cmd = f"~/sire.app/bin/analyse_freenrg mbar\
          -i {output_dir}/lambda*/simfile.dat -p 100 --temperature 298.0 > {output_dir}/mbar.dat"
     os.system(cmd)
     print(f"MBAR analysis complete for cumulative sampling time per window {delta_t:.2f} ns")
