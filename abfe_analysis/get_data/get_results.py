@@ -112,11 +112,16 @@ def get_results(leg = "bound", run_nos = [1,2,3,4,5], restraint_type="Boresch"):
                         dg_ana, conf_int_ana = get_restraint_cor(f"{output_dir}/boresch_analytical_correction.dat",
                                                                 restraint_type="Boresch")
                         results[run_name]["boresch_ana_corr"] = (dg_ana, conf_int_ana)
-                        dg_semi, conf_int_semi = get_restraint_cor(f"{output_dir}/boresch_semi_ana_correction.dat",
-                                                                    restraint_type="Boresch")
+                        try:
+                            dg_semi, conf_int_semi = get_restraint_cor(f"{output_dir}/boresch_semi_ana_correction.dat",
+                                                                        restraint_type="Boresch")
+                        except FileNotFoundError:
+                            dg_semi, conf_int_semi = get_restraint_cor(f"{output_dir}/boresch_semi-analytical_correction.dat",
+                                                                        restraint_type="Boresch")
+
                         results[run_name]["boresch_semi-ana_corr"] = (dg_semi, conf_int_semi)
                     elif restraint_type == "multiple_dist":
-                        dg_cor, conf_int_cor = get_restraint_cor(f"{output_dir}/standard-state-s-1-b-4-d-0.25-o-6.dat",
+                        dg_cor, conf_int_cor = get_restraint_cor(f"{output_dir}/standard-state-bugfixed-s-1-b-4-d-0.25-o-30.dat",
                                                                 restraint_type="multiple_dist")
                         results[run_name]["multiple_dist_corr"] = (dg_cor, conf_int_cor)
                     elif restraint_type == "Cart":
@@ -126,7 +131,7 @@ def get_results(leg = "bound", run_nos = [1,2,3,4,5], restraint_type="Boresch"):
 
                     # Symmetry corrections assume 298 K (RT = 0.592187)
                     results[run_name]["symm_corr_binding_sites_298"] = (0.65, 0) # Three-fold symmetry of binding sites (so RTln3)
-                    #results[run_name]["symm_corr_phenol_298"] = (0.41, 0) # Rotation of phenol hindered in binding site (so RTln2)
+                    results[run_name]["symm_corr_phenol_298"] = (0.41, 0) # Rotation of phenol hindered in binding site (so RTln2)
             
         
         dg_tot = sum([val[0] for key, val in results[run_name].items() if key != "boresch_ana_corr"]) # Energy is first value in tuple.
