@@ -677,6 +677,69 @@ def plot_dof_vals(leg, runs, stage, lam_val, percent_traj, selected_dof_list, do
 #                bbox_inches='tight')
 
 
+def plot_restr_energies(leg="bound", run_nos=[1,2,3,4,5], stage="vanish", percent_traj=62.5, dof_type="Boresch"):
+    """
+    Plot the average restraint energy.
+
+    Args:
+        leg (str, optional): Defaults to "bound".
+        run_nos (list, optional): Defaults to [1,2,3,4,5].
+        stage (str, optional): restrain, discharge, or vanish. Defaults to "vanish".
+        percent_traj (float, optional): Percentage of run to average over (25 % would
+        result in intial 75 % of trajectory being discarded). Defaults to 62.5.
+        dof_type (str): Boresch, multiple_dist, Cart. Defaults to "Boresch".
+    """
+
+    paths = dir_paths.get_dir_paths(run_nos, leg)
+    av_nrgs_all_runs = []
+    first_run_name =  dir_paths.get_run_name(run_nos[0],leg)
+    # Assume same no lam windows for all runs
+    lam_vals = paths[first_run_name][stage]["lam_vals"]
+    
+    for run_no in run_nos:
+
+        # Get restraint dict
+        run_name = dir_paths.get_run_name(run_no,leg)
+        cfg_path = f'{paths[run_name][stage]["input"]}/sim.cfg'
+        rest_dict = read_rest_dict(cfg_path, rest_type=dof_type)
+        # Get average energies for each value of lambda
+        av_nrgs = []
+
+        for lam_val in lam_vals:
+            dof_dicts = get_dof_dicts(leg, [run_no], stage, lam_val, percent_traj, dof_type)
+
+            # Get average energy for each lambda run
+            av_nrg = 0
+            for dof in [dof for dof in dof_dicts[run_name] if dof not in ["thetaR", "thetaL", "tot_var"]]:
+
+                # Create function to get energy based on value
+                k = rest_dict["force_constants"][f"k{dof}"]
+                x0 = rest_dict["equilibrium_values"][f"{dof}0"]
+                # Be aware of periodicity for dihedrals
+                def nrg(x):
+                    if dihedral:
+                        dx = min(abs(x - x0), abs((x + 2*np.pi) - x0))
+                    else:
+                        dx = abs(x-x0)
+                    return 0.5 * k * dx **2 # Energy in kcal mol-1
+                dihedral = dof[:3] == "phi"
+                energies = list(map(nrg, dof_dicts[run_name][dof]["values"]))
+                av_nrg += np.mean(energies)
+            av_nrgs.append(av_nrg)
+
+        av_nrgs_all_runs.append(av_nrgs)
+
+    # Now, plot them
+    fig, ax = plt.subplots(figsize = (4,4), dpi=1000)
+    plot_conv(ax, leg, stage, lam_vals, av_nrgs_all_runs, "$\lambda$",
+            f"Average restraint energy / kcal.mol$^-$$^1$")
+
+    fig.tight_layout()
+    mkdir_if_required("analysis")
+    mkdir_if_required(f"analysis/{dof_type}_dof")
+    fig.savefig(f"analysis/{dof_type}_dof/{leg}_{stage}_restraint_energies.png")
+
+    
 # Just seems to return whitespace (but no errors) if functions modified to return figures
 #def plot_dof(leg, runs, stage, lam_val, percent_traj, selected_dof_list):
 #    fig = plt.figure(figsize=(4*len(selected_dof_list), 8))
