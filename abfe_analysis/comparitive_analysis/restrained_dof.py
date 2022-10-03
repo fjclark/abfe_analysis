@@ -11,6 +11,8 @@ import matplotlib.pyplot as plt
 from ..get_data import dir_paths
 from ast import literal_eval
 from ..save_data import mkdir_if_required
+from .compare_conv import plot_conv
+from scipy.stats import circmean
 
 
 def get_mda_universe(leg, run, stage, lam_val):
@@ -236,27 +238,8 @@ def track_boresch_dof(anchor_ats, u, percent_traj):
                         corrected_values_sd = np.array(corrected_values_sd) 
                         dof_dict[dof]["sd"]=corrected_values_sd.std()
 
-                        # Correct mean (not exact and will fail if very well split above 
-                        # and below 2pi)get middle of interval based on current mean
-                        print("WARNING: Mean for dihedrals may be incorrect if true mean" \
-                              " is near periodic boundary")
-                        corrected_values_mean=[]
-                        periodic_bound = mean - np.pi
-                        if periodic_bound < -np.pi:
-                            periodic_bound+=2*np.pi
-                        # shift vals from below periodic bound to above
-                        for val in dof_dict[dof]["values"]:
-                            if val < periodic_bound:
-                                corrected_values_mean.append(val+2*np.pi)
-                            else:
-                                corrected_values_mean.append(val)
-                        corrected_values_mean = np.array(corrected_values_mean)
-                        mean_corrected = corrected_values_mean.mean()
-                        #shift mean back to normal range
-                        if mean_corrected > np.pi:
-                            dof_dict[dof]["mean"]=mean_corrected-2*np.pi
-                        else:
-                            dof_dict[dof]["mean"]=mean_corrected
+                        # Correct mean 
+                        dof_dict[dof]["mean"] = circmean(dof_dict[dof]["values"], high=np.pi, low=-np.pi)
                             
                     else:
                         dof_dict[dof]["sd"]=dof_dict[dof]["values"].std()
