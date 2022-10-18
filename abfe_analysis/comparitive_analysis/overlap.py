@@ -53,7 +53,7 @@ def plot_overlap_mats(leg="bound", run_nos=[1,2,3,4,5]):
             lam_vals = [float(x) for x in lam_vals_str]
             if n_stages == 1:
                 ax = axs[i]
-            if n_runs == 1:
+            elif n_runs == 1:
                 ax = axs[j]
             else:
                 ax = axs[i,j]
