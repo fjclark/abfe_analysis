@@ -586,8 +586,8 @@ def plot_dof_hists(leg, runs, stage, lam_val, percent_traj, selected_dof_list, d
     axs = axs.flatten()
 
     # Dictionary to translate the Boresch DOF to latex for figure labels
-    boresch_to_latex = {"r":r"$r_{Aa}$","thetaA":r"$\theta_A$","thetaB":r"$\theta_B$","phiA":"$\phi_A$","phiB":"$\phi_B$",
-        "phiC":"$\phi_C$","thetaR":r"$\theta_R$","thetaL":r"$\theta_L$"}
+    boresch_to_latex = {"r":r"$r$","thetaA":r"$\theta_\mathrm{A}$","thetaB":r"$\theta_\mathrm{B}$","phiA":"$\phi_\mathrm{A}$","phiB":"$\phi_\mathrm{B}$",
+        "phiC":"$\phi_\mathrm{C}$","thetaR":r"$\theta_\mathrm{R}$","thetaL":r"$\theta_\mathrm{L}$"}
 
     for j, run in enumerate(runs):
         run_name = dir_paths.get_run_name(run,leg)
@@ -640,12 +640,12 @@ def plot_dof_vals(leg, runs, stage, lam_val, percent_traj, selected_dof_list, do
 
     fig, axs = plt.subplots(ceil(no_dof/3), 3, figsize=(4*3,2*ceil(no_dof/3)), dpi=800)
     #colours =  ['#00429d', '#3a8bbb', '#ffb59a', '#ff6b95', '#93003a'] # Will cause issues for more than 5 runs
-    colours =  ['#000000', '#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#999999', '#e41a1c', '#dede00'] # Will cause issues for more than 10 runs
+    #colours =  ['#000000', '#377eb8', '#ff7f00', '#4daf4a', '#f781bf', '#a65628', '#984ea3', '#999999', '#e41a1c', '#dede00'] # Will cause issues for more than 10 runs
     axs = axs.flatten()
 
     # Dictionary to translate the Boresch DOF to latex for figure labels
-    boresch_to_latex = {"r":r"$r_{Aa}$","thetaA":r"$\theta_A$","thetaB":r"$\theta_B$","phiA":"$\phi_A$","phiB":"$\phi_B$",
-        "phiC":"$\phi_C$","thetaR":r"$\theta_R$","thetaL":r"$\theta_L$"}
+    boresch_to_latex = {"r":r"$r$","thetaA":r"$\theta_\mathrm{A}$","thetaB":r"$\theta_\mathrm{B}$","phiA":"$\phi_\mathrm{A}$","phiB":"$\phi_\mathrm{B}$",
+        "phiC":"$\phi_\mathrm{C}$","thetaR":r"$\theta_\mathrm{R}$","thetaL":r"$\theta_\mathrm{L}$"}
 
 
     for j, run in enumerate(runs):
@@ -655,16 +655,17 @@ def plot_dof_vals(leg, runs, stage, lam_val, percent_traj, selected_dof_list, do
             values = dof_dicts[run_name][dof]["values"]
             mean = dof_dicts[run_name][dof]["mean"]
             sd = dof_dicts[run_name][dof]["sd"]
-            ax.plot([x for x in range(len(values))], values, label = f"{run_name}", color=colours[j])
-            ax.axhline(mean, linestyle = "dashed", color=colours[j], linewidth=2, label=f"Mean: {mean:.2f}\nSD: {sd:.2f}")
+            ax.plot([(x*8/400) for x in range(len(values))], values, label = f"run {run_name[-1]}", color=f"C{j+1}")
+            #ax.axhline(mean, linestyle = "dashed", color=colours[j], linewidth=2, label=f"Mean: {mean:.2f}\nSD: {sd:.2f}")
             if dof == "r" or dof[1] == "r":
-                ax.set_ylabel(f"{boresch_to_latex[dof]} " + r"($\mathrm{\AA}$)")
+                ax.set_ylabel(f"{boresch_to_latex[dof]} " + r"/ $\mathrm{\AA}$")
             elif type(dof) == tuple:
-                ax.set_ylabel(f"Dist between indices {dof[0]} and {dof[1]}" + r" $\textrm{\AA}$")
+                ax.set_ylabel(f"Dist between indices {dof[0]} and {dof[1]}" + r"/ $\textrm{\AA}$")
             else:
-                ax.set_ylabel(f"{boresch_to_latex[dof]} (rad)")
-            ax.set_xlabel("Frame No")
-            ax.legend(loc=(1.04,0))
+                ax.set_ylabel(f"{boresch_to_latex[dof]} / rad")
+            ax.set_xlabel("Time / ns")
+            if i == len(selected_dof_list) -1:
+                ax.legend(loc=(1.04,0))
 #           handles, labels = ax.get_legend_handles_labels()
 #           lg = fig.legend(handles, labels, bbox_to_anchor=(1.10, 0.5))
                 #ax.legend().set_visible(False)
