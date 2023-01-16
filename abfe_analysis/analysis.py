@@ -22,7 +22,8 @@ def run_analysis(leg = "bound", run_nos=[1,2,3,4,5], restraint_type="Boresch", t
                           "release": {"wind_len": 6, "discard": 1}, "unrigidify_lig": {
                           "wind_len": 6, "discard": 1},"unrigidify_prot": {
                           "wind_len": 6, "discard": 1}, "rigidify": {
-                          "wind_len": 6, "discard": 1}, "release_2": {"wind_len": 2, "discard": 1}}):
+                          "wind_len": 6, "discard": 1}, "release_2": {"wind_len": 2, "discard": 1}},
+                          check_for_success=True):
                 
                     # For free leg, remember to change to:
                     #percent_traj_dict = {"discharge":83.33333333, "vanish":83.3333333}):
@@ -41,6 +42,7 @@ def run_analysis(leg = "bound", run_nos=[1,2,3,4,5], restraint_type="Boresch", t
         Defaults to {"restrain":83.33333333, "discharge":83.33333333, "vanish":62.5}.
         simtime (dict): Lengths of simulations and lengths of inital periods to discard as equilibration, in ns
                         , for generation of the convergence data. 
+        check_for_success (bool): Whether to check if all simulations ran successfully before analysing. Defaults to True.
     """
 
     print("###############################################################################################")
@@ -58,8 +60,9 @@ def run_analysis(leg = "bound", run_nos=[1,2,3,4,5], restraint_type="Boresch", t
     # Only calculate convergence data if this has not been done already
     if not os.path.isfile("analysis/convergence_data.pickle"):
         # Check if all simulations ran successfully
-        if not check_success.check_success(run_nos=run_nos, leg=leg, verbose=True):
-            raise Exception("Error: Not all windows completed successfully")
+        if check_for_success:
+            if not check_success.check_success(run_nos=run_nos, leg=leg, verbose=True):
+                raise Exception("Error: Not all windows completed successfully")
         convergence_data.get_convergence_dict(leg=leg, run_nos=run_nos, nrg_freq=nrg_freq,
                                               timestep=timestep/1000000, # Convert to ns
                                                simtime=simtime)
