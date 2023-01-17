@@ -59,7 +59,7 @@ def do_mbar(lam_vals, input_dir, output_dir, start_time, end_time, nrg_freq, tim
         (float): cumulative sampling time 
     """
     cumtime = 0
-    delta_t = end_time - start_time
+    delta_t = end_time
 
     for lam_val in lam_vals:
         os.system(f"mkdir {output_dir}/lambda-{lam_val}")
@@ -67,6 +67,7 @@ def do_mbar(lam_vals, input_dir, output_dir, start_time, end_time, nrg_freq, tim
                          f"{output_dir}/lambda-{lam_val}/simfile.dat",
                           start_time, end_time,
                           nrg_freq, timestep)
+
         cumtime += delta_t
 
     cmd = f"~/sire.app/bin/analyse_freenrg mbar\
@@ -150,10 +151,12 @@ def get_convergence_dict(leg="bound", run_nos=[1, 2, 3, 4, 5],
         conv_dict[run]={}
         for stage in paths[run].keys():
             conv_dict[run][stage]={}
-            start_time = simtime[stage]["discard"]
+            if simtime[stage]["discard"] != 0:
+                raise ValueError("Discard time for stage must be 0")
             final_end_time = simtime[stage]["wind_len"]
-            end_times = [(x*chunksize)+start_time for x in range(1, int((final_end_time-start_time)/chunksize)+1)]
-            win_times = [x-start_time for x in end_times] # Cumulative time for single lam window
+            end_times = [(x*chunksize) +1 for x in range(1, int((final_end_time-1)/chunksize)+1)] # CHANGE THIS LINE
+            start_times = [end_time - 1 for end_time in end_times] # CHANGE THIS LINE
+            win_times = end_times # Cumulative time for single lam window
             lam_vals = paths[run][stage]["lam_vals"]
             input_dir = paths[run][stage]["output"] # output of simulations is input to do_mbar()
 
@@ -167,7 +170,7 @@ def get_convergence_dict(leg="bound", run_nos=[1, 2, 3, 4, 5],
             for i, win_time in enumerate(win_times): # There will be a corresponding cumulative time, returned by do_mbar
                 os.system(f"mkdir tmp/{win_time}")
                 do_mbar_args.append((lam_vals, input_dir, f"./tmp/{win_time}",
-                                      start_time, end_times[i], nrg_freq, timestep))
+                                      start_times[i], end_times[i], nrg_freq, timestep))
 
             # Carry out mbar analyses in parallel
             with Pool() as pool:
