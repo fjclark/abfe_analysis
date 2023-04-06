@@ -18,7 +18,7 @@ def run_analysis(leg = "bound", run_nos=[1,2,3,4,5], restraint_type="Boresch", t
                  percent_traj_dict = {"restrain":83.33333333, "discharge":83.33333333, "vanish":62.5, "rigidify":83.33333333,
                      "unrigidify_lig":83.33333333, "unrigidify_prot":83.33333333, "release":83.333333},
                 #percent_traj_dict = {"discharge":83.33333333, "vanish":83.3333333, "restrain":83.33333333},
-                simtime = {"restrain": {"wind_len": 6, "discard": 1}, "discharge": {"wind_len": 6, "discard": 1}, "vanish": {"wind_len": 6, "discard": 1},
+                simtime = {"restrain": {"wind_len": 6, "discard": 1}, "discharge": {"wind_len": 6, "discard": 1}, "vanish": {"wind_len": 8, "discard": 3},
                           "release": {"wind_len": 6, "discard": 1}, "unrigidify_lig": {
                           "wind_len": 6, "discard": 1},"unrigidify_prot": {
                           "wind_len": 6, "discard": 1}, "rigidify": {
